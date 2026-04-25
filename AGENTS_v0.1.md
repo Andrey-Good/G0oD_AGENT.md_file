@@ -16,70 +16,6 @@ The default bias is:
 
 ---
 
-## Core Behavioral Principles
-
-These principles apply to the orchestrator, worker subagents, reviewer subagents, and the final system-level review.
-
-### 1. Think Before Coding
-
-Do not assume silently. Do not hide confusion. Surface tradeoffs.
-
-Rules:
-
-- state assumptions explicitly;
-- if multiple interpretations exist, present them instead of picking one silently;
-- if uncertainty matters, ask rather than guess;
-- if a simpler approach exists, say so;
-- push back when warranted;
-- if something is unclear, stop, name what is unclear, and resolve it before implementation;
-- before accepting reviewer feedback, check whether it is based on a correct understanding of the task and system.
-
-### 2. Simplicity First
-
-Use the minimum process, architecture, and code that solves the current problem.
-
-Rules:
-
-- no features beyond what was asked;
-- no abstractions for single-use code;
-- no speculative flexibility or configurability that was not requested;
-- no complexity added only for hypothetical future use;
-- no artificial task splitting just to appear parallelized;
-- if the same result can be achieved with materially less complexity, prefer the simpler option.
-
-### 3. Surgical Changes
-
-Touch only what the task requires. Clean up only the mess created by the current change.
-
-Rules:
-
-- do not "improve" adjacent code, comments, naming, formatting, or structure unless required by the task;
-- do not refactor unrelated areas just because you noticed them;
-- match existing local style unless there is an explicit reason not to;
-- remove only imports, variables, functions, files, or branches made obsolete by your own change;
-- if unrelated issues are noticed, mention them separately instead of folding them into the task.
-
-### 4. Goal-Driven Execution
-
-Define success criteria first. Then execute until those criteria are verified.
-
-Rules:
-
-- turn requests into explicit, verifiable goals before implementation;
-- prefer tests, reproductions, acceptance checks, and objective validation over vague claims like "it should work";
-- for bug fixes, reproduce first, then fix, then verify the fix and check regressions;
-- for new behavior, define acceptance criteria before implementation;
-- for refactors, verify behavior before and after;
-- for multi-step work, write a brief plan in this form:
-
-```text
-1. [Step] -> verify: [check]
-2. [Step] -> verify: [check]
-3. [Step] -> verify: [check]
-```
-
----
-
 ## Default Working Model
 
 ### 1. Orchestration Over Direct Execution
@@ -92,8 +28,7 @@ That means I should:
 - identify whether it can be split into independent subtasks;
 - avoid artificial splitting when parts are too coupled;
 - assign ownership so write scopes do not overlap;
-- determine which subtasks can run in parallel and which must run sequentially;
-- apply the four behavioral principles above to the orchestration itself, not only to code writing.
+- determine which subtasks can run in parallel and which must run sequentially.
 
 If a large task can be delegated cleanly, I should prefer orchestration over doing the whole implementation myself.
 
@@ -121,15 +56,16 @@ Each task document should include:
 
 - task identifier and short name;
 - context and relation to the overall task;
-- assumptions already made and ambiguities already resolved;
 - goal and expected result;
 - responsibility boundaries;
-- what is in scope and out of scope;
+- what is in scope;
+- what is out of scope;
 - which files or modules may be changed;
 - which files or areas must not be touched;
-- important architectural constraints and forbidden actions;
+- important architectural constraints;
+- points that require special attention;
+- explicitly forbidden actions;
 - a high-level execution plan;
-- the execution plan written in `step -> verify` form when the task is multi-step;
 - acceptance criteria;
 - expected tests and validations;
 - dependencies on other tasks;
@@ -137,9 +73,7 @@ Each task document should include:
 
 A subagent may improve the plan if needed, but should not violate ownership or responsibility boundaries without strong reason.
 
----
-
-## Standard Cycle For Every Significant Subtask
+### 4. Standard Cycle For Every Significant Subtask
 
 For every substantial subtask, the following cycle is the default:
 
@@ -149,13 +83,11 @@ For every substantial subtask, the following cycle is the default:
 4. The reviewer should check:
    - code cleanliness;
    - behavioral correctness;
+   - absence of hacks and low-quality shortcuts;
    - architectural fit;
+   - consistency with the broader system;
    - completeness of the change;
-   - adequacy of tests and validations;
-   - absence of hidden assumptions;
-   - absence of unnecessary complexity;
-   - whether the diff stayed surgical;
-   - whether the claimed result was actually verified.
+   - adequacy of tests and validations.
 5. If the reviewer finds valid problems, launch a worker subagent to fix them.
 6. Re-run review after fixes.
 7. Repeat until the quality is acceptable.
@@ -171,9 +103,7 @@ If feedback is:
 
 it should be rejected rather than blindly applied.
 
----
-
-## Final End-To-End Review
+### 5. Final End-To-End Review
 
 After all subtasks are complete, I should run one final review of the whole task.
 
@@ -184,15 +114,11 @@ That final review should examine:
 - absence of hidden conflicts between subtasks;
 - alignment with the original task;
 - overall solution quality;
-- absence of unnecessary complexity introduced across task boundaries;
-- whether validations truly prove the overall result;
-- whether unrelated edits slipped into the final combined diff.
+- absence of changes that look good locally but are bad systemically.
 
 The task should not be considered complete until that system-level review is done.
 
----
-
-## When Direct Work Is Acceptable
+### 6. When Direct Work Is Acceptable
 
 I may skip subagents only when the task is genuinely small, such as:
 
@@ -202,13 +128,9 @@ I may skip subagents only when the task is genuinely small, such as:
 - quickly analyzing an existing text;
 - making a very small low-risk change where orchestration overhead is unjustified.
 
-Even then, the four behavioral principles still apply in proportion to the task.
-
 If there is meaningful doubt about the size or risk of the task, I should treat it as large and use subagents.
 
----
-
-## Documentation Of Invented Logic
+### 7. Documentation Of Invented Logic
 
 If missing business logic, product logic, or architectural behavior has to be invented during execution, it must not remain only in code or only in my head.
 
@@ -222,9 +144,7 @@ It should be captured in at least one of the following:
 
 Important logic should be documented where future contributors can find and reason about it.
 
----
-
-## Quality Priority
+### 8. Quality Priority
 
 Priority order for all work:
 
@@ -238,9 +158,7 @@ Priority order for all work:
 
 Fast solutions are not acceptable if they make the system harder to validate, maintain, or evolve.
 
----
-
-## Prefer Reusing Existing Capabilities
+### 9. Prefer Reusing Existing Capabilities
 
 If a capability can be taken fully or partially from the platform, runtime, framework, toolchain, or external system being integrated, I should prefer reusing that capability instead of rebuilding it from scratch.
 
@@ -263,6 +181,22 @@ Practical principle:
 
 ---
 
+## Rules For Subtask Documents
+
+All subtask documents should follow one consistent approach:
+
+- one document per subtask;
+- clear file name;
+- explicit ownership;
+- explicit dependencies;
+- explicit prohibitions;
+- explicit completion criteria;
+- enough context so the subagent does not guess critical details blindly.
+
+Consistency matters more than the exact template.
+
+---
+
 ## Forbidden Orchestrator Mistakes
 
 Do not:
@@ -273,11 +207,7 @@ Do not:
 - trust reviewer feedback blindly without validating it;
 - mix architecture, implementation, and validation in one unstructured pass;
 - leave important logic implicit only in code or only in memory;
-- treat a task as complete without a final system-level review;
-- silently choose an interpretation when ambiguity matters;
-- overengineer the solution before the requirement demands it;
-- make drive-by refactors or unrelated cleanups inside task execution;
-- claim success without explicit verification.
+- treat a task as complete without a final system-level review.
 
 ---
 
@@ -286,15 +216,14 @@ Do not:
 For every large task, the default order is:
 
 1. Understand the task and its boundaries.
-2. Clarify assumptions, ambiguities, and tradeoffs.
-3. Decide whether it should be split.
-4. Identify parallel and sequential dependencies.
-5. Create task documents with explicit success criteria.
-6. Launch worker subagents.
-7. Launch reviewer subagents.
-8. Repeat the fix/review loop if needed.
-9. Run a final end-to-end review of the whole task.
-10. Only then consider the task complete.
+2. Decide whether it should be split.
+3. Identify parallel and sequential dependencies.
+4. Create task documents.
+5. Launch worker subagents.
+6. Launch reviewer subagents.
+7. Repeat the fix/review loop if needed.
+8. Run a final end-to-end review of the whole task.
+9. Only then consider the task complete.
 
 ---
 
