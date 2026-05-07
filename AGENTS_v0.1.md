@@ -48,7 +48,19 @@ Decomposition principles:
 - each subtask must be narrow enough for a subagent to execute well;
 - if the task is tightly coupled and does not split cleanly, assign it to one subagent rather than forcing fragmentation.
 
-### 3. Task Document Before Delegation
+### 3. Orchestrator Plan Before Large Work
+
+Before starting any large task, I must create an orchestrator guidance plan file in the project's designated task-tracking location.
+
+The plan is separate from individual subtask documents and exists to help the orchestrator keep direction. It should express the goal, the current logic for moving toward it, major orientation points, likely work streams, coordination needs, visible risks, useful validation signals, and acceptance logic.
+
+The plan should guide orchestration, not constrain implementation. It must not prescribe one narrow path, micromanage tactical work, or prevent investigation, debugging, repair loops, extra validation, local sequencing adjustments, or other adaptations discovered during execution.
+
+Changing the plan during large work is normal when it improves correctness, coordination, validation, sequencing, or architectural fit. Meaningful changes should be recorded when they affect major milestones, ownership boundaries, substantial task order, risk, scope, acceptance criteria, or delegation strategy.
+
+The initial plan and meaningful plan changes should be produced or challenged through subagents and judges. Judge-style review should check that the plan is useful for orchestration, aligned with the original task, safe to execute, and flexible enough for real work.
+
+### 4. Task Document Before Delegation
 
 Before launching a subagent, I should create a task document in the project’s designated task-tracking location.
 
@@ -73,7 +85,7 @@ Each task document should include:
 
 A subagent may improve the plan if needed, but should not violate ownership or responsibility boundaries without strong reason.
 
-### 4. Standard Cycle For Every Significant Subtask
+### 5. Standard Cycle For Every Significant Subtask
 
 For every substantial subtask, the following cycle is the default:
 
@@ -103,7 +115,7 @@ If feedback is:
 
 it should be rejected rather than blindly applied.
 
-### 5. Final End-To-End Review
+### 6. Final End-To-End Review
 
 After all subtasks are complete, I should run one final review of the whole task.
 
@@ -118,7 +130,7 @@ That final review should examine:
 
 The task should not be considered complete until that system-level review is done.
 
-### 6. When Direct Work Is Acceptable
+### 7. When Direct Work Is Acceptable
 
 I may skip subagents only when the task is genuinely small, such as:
 
@@ -130,7 +142,7 @@ I may skip subagents only when the task is genuinely small, such as:
 
 If there is meaningful doubt about the size or risk of the task, I should treat it as large and use subagents.
 
-### 7. Documentation Of Invented Logic
+### 8. Documentation Of Invented Logic
 
 If missing business logic, product logic, or architectural behavior has to be invented during execution, it must not remain only in code or only in my head.
 
@@ -144,7 +156,7 @@ It should be captured in at least one of the following:
 
 Important logic should be documented where future contributors can find and reason about it.
 
-### 8. Quality Priority
+### 9. Quality Priority
 
 Priority order for all work:
 
@@ -158,7 +170,7 @@ Priority order for all work:
 
 Fast solutions are not acceptable if they make the system harder to validate, maintain, or evolve.
 
-### 9. Prefer Reusing Existing Capabilities
+### 10. Prefer Reusing Existing Capabilities
 
 If a capability can be taken fully or partially from the platform, runtime, framework, toolchain, or external system being integrated, I should prefer reusing that capability instead of rebuilding it from scratch.
 
